@@ -43,11 +43,14 @@ if __name__ == "__main__":
     arduino = serial.Serial('COM10', 115200, timeout=.1)
 
     while True:
-        data = arduino.readline()  # the last bit gets rid of the new-line chars
+        data = arduino.readline()
         if data:
             try:
                 data = json.loads(data)
                 if data['readComplete']:
-                    print(get_recommendation(data))
+                    print("Data: {0}".format(data))
+                    recommended_crop = get_recommendation(data)
+                    print("Recommended crop: {0}".format(recommended_crop))
+                    arduino.write(" RC: {0}".format(recommended_crop).encode())
             except json.decoder.JSONDecodeError as error:
                 pass
