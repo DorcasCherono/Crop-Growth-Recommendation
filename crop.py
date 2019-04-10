@@ -30,6 +30,14 @@ def get_recommendation(data):
     return crop
 
 
+def save_history(crop, data):
+    query = "INSERT INTO `history`(`recommended_crop`, `temperature_value`, `ph_value`, `moisture_value`, " \
+            "`humidity_value`) VALUES (%s,%s,%s,%s,%s)"
+    values = [crop, data['temperature'], data['ph'], data['moisture'], data['humidity']]
+    cursor.execute(query, values)
+    db.commit()
+
+
 if __name__ == "__main__":
     db = mysql.connect(
         host="localhost",
@@ -52,5 +60,6 @@ if __name__ == "__main__":
                     recommended_crop = get_recommendation(data)
                     print("Recommended crop: {0}".format(recommended_crop))
                     arduino.write(" RC: {0}".format(recommended_crop).encode())
+                    save_history(recommended_crop, data)
             except json.decoder.JSONDecodeError as error:
                 pass
